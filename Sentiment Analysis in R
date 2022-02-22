@@ -1,0 +1,734 @@
+# loading libraries and EDA ----
+library(tm) #load tm package
+library(wordcloud) #load wordcloud package
+library(ggplot2)
+library(dplyr)
+library(SnowballC)
+tourist_review <- read.csv("tourist_accommodation_reviews.csv", header= TRUE)
+
+names(tourist_review)
+head(tourist_review)
+tail(tourist_review)
+summary(tourist_review)
+str(tourist_review)
+dim(tourist_review) 
+
+#-------Filtering out 30 hotels at random for analysis
+
+k_hotel <- subset(tourist_review, 
+            Hotel.Restaurant.name == "K-Hotel Restaurant and Beer Garden")
+
+yorkshire_hotel <- subset(tourist_review, 
+                            Hotel.Restaurant.name == "Yorkshire Hotel Restaurant")
+harrys_steakhouse <- subset(tourist_review, 
+                            Hotel.Restaurant.name == "Harrys Steakhouse & Hotel")
+ps_hotel <- subset(tourist_review, 
+                            Hotel.Restaurant.name == "P.S. Hotel")
+cape_panwa <- subset(tourist_review, 
+                            Hotel.Restaurant.name == "Top Of The Reef at Cape Panwa Hotel")
+green_tamarind <- subset(tourist_review, 
+                            Hotel.Restaurant.name == "Green Tamarind Kitchen")
+
+istanbul_turkish <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "Istanbul Turkish Restaurant")
+golden_paradise <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "Golden Paradise Restaurant")
+surin_chill <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "Surin Chill House")
+sabaijai_cafe <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "Sabaijai Cafe")
+the_family_restaurant <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "The Family Restaurant")
+austrian_garden <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "Austrian Garden Restaurant")
+orange_restaurant <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "Orange Restaurant")
+taste_bar <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "Taste Bar & Grill")
+pomodoro_pizza <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "Pomodoro Pizza Restaurant")
+eurothai_restaurant <- subset(tourist_review, 
+                         Hotel.Restaurant.name == "EuroThai Restaurant")
+
+riverside_restaurant <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Riverside Restaurant")
+ging_restaurant <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Ging Restaurant")
+patong_corner <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Patong Corner Restaurant")
+catfish_cafe <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "CatFish Cafe")
+oiy_restaurant <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Oiy Restaurant")
+ying_restaurant <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Ying Restaurant")
+ali_baba <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Ali Baba Restaurant")
+kata_villa <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Kata Villa Restaurant")
+natural_restaurant <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Natural Restaurant")
+white_box_phuket <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "White Box Phuket")
+ann_restaurant <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Ann Restaurant")
+yorkshire_hotel <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Yorkshire Hotel Restaurant")
+archee_restaurant <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Archee Restaurant")
+dibuk_restaurant <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "Dibuk restaurant")
+the_pizza_coy <- subset(tourist_review, 
+                          Hotel.Restaurant.name == "The Pizza Company")
+
+
+
+#----Inspecting the filtered dataset
+head(ali_baba$Review)
+head(white_box_phuket$Review)
+head(the_family_restaurant$Review)
+head(catfish_cafe$Review)
+head(dibuk_restaurant$Review)
+
+
+#The following code creates text vectors and cleans the filtered dataset
+
+k_hotel <- k_hotel$Review
+yorkshire_hotel <- yorkshire_hotel$Review
+harrys_steakhouse <- harrys_steakhouse$Review
+ps_hotel <- ps_hotel$Review
+cape_panwa <- cape_panwa$Review
+green_tamarind <- green_tamarind$Review
+istanbul_turkish <- istanbul_turkish$Review
+golden_paradise <- golden_paradise$Review
+surin_chill <- surin_chill$Review
+sabaijai_cafe <- sabaijai_cafe$Review
+the_family_restaurant <- the_family_restaurant$Review
+austrian_garden <- austrian_garden$Review
+orange_restaurant <- orange_restaurant$Review
+taste_bar <- taste_bar$Review
+pomodoro_pizza <- pomodoro_pizza$Review
+eurothai_restaurant <- eurothai_restaurant$Review
+riverside_restaurant <- riverside_restaurant$Review
+ging_restaurant <- ging_restaurant$Review
+patong_corner <- patong_corner$Review
+catfish_cafe <- catfish_cafe$Review
+oiy_restaurant <- oiy_restaurant$Review
+ying_restaurant <- ying_restaurant$Review
+ali_baba <- ali_baba$Review
+kata_villa <- kata_villa$Review
+natural_restaurant <- natural_restaurant$Review
+white_box_phuket <- white_box_phuket$Review
+ann_restaurant <- ann_restaurant$Review
+archee_restaurant <- archee_restaurant$Review
+dibuk_restaurant <- dibuk_restaurant$Review
+the_pizza_coy <- the_pizza_coy$Review
+
+
+
+#Converting all the text in text vector to lowercase
+
+k_hotel <- tolower(k_hotel)
+yorkshire_hotel <- tolower(yorkshire_hotel)
+harrys_steakhouse <- tolower(harrys_steakhouse)
+ps_hotel <- tolower(ps_hotel)
+cape_panwa <- tolower(cape_panwa)
+green_tamarind <- tolower(green_tamarind)
+istanbul_turkish <- tolower(istanbul_turkish)
+golden_paradise <- tolower(golden_paradise)
+surin_chill <- tolower(surin_chill)
+sabaijai_cafe <- tolower(sabaijai_cafe)
+the_family_restaurant <- tolower(the_family_restaurant)
+austrian_garden <- tolower(austrian_garden)
+orange_restaurant <- tolower(orange_restaurant)
+taste_bar <- tolower(taste_bar)
+pomodoro_pizza <- tolower(pomodoro_pizza)
+eurothai_restaurant <- tolower(eurothai_restaurant)
+riverside_restaurant <- tolower(riverside_restaurant)
+ging_restaurant <- tolower(ging_restaurant)
+patong_corner <- tolower(patong_corner)
+catfish_cafe <- tolower(catfish_cafe)
+oiy_restaurant <- tolower(oiy_restaurant)
+ying_restaurant <- tolower(ying_restaurant)
+ali_baba <- tolower(ali_baba)
+kata_villa <- tolower(kata_villa)
+natural_restaurant <- tolower(natural_restaurant)
+white_box_phuket <- tolower(white_box_phuket)
+ann_restaurant <- tolower(ann_restaurant)
+archee_restaurant <- tolower(archee_restaurant)
+dibuk_restaurant <- tolower(dibuk_restaurant)
+the_pizza_coy <- tolower(the_pizza_coy)
+
+
+
+#The following code removes the links from the reviews
+k_hotel <- gsub("http\\S+\\s*", "", k_hotel)
+yorkshire_hotel <- gsub("http\\S+\\s*", "", yorkshire_hotel)
+harrys_steakhouse <- gsub("http\\S+\\s*", "", harrys_steakhouse)
+ps_hotel <- gsub("http\\S+\\s*", "", ps_hotel)
+cape_panwa <- gsub("http\\S+\\s*", "", cape_panwa)
+green_tamarind <- gsub("http\\S+\\s*", "", green_tamarind)
+istanbul_turkish <- gsub("http\\S+\\s*", "", istanbul_turkish)
+golden_paradise <- gsub("http\\S+\\s*", "", golden_paradise)
+surin_chill <- gsub("http\\S+\\s*", "", surin_chill)
+sabaijai_cafe <- gsub("http\\S+\\s*", "", sabaijai_cafe)
+the_family_restaurant <- gsub("http\\S+\\s*", "", the_family_restaurant)
+austrian_garden <- gsub("http\\S+\\s*", "", austrian_garden)
+orange_restaurant <- gsub("http\\S+\\s*", "", orange_restaurant)
+taste_bar <- gsub("http\\S+\\s*", "", taste_bar)
+pomodoro_pizza <- gsub("http\\S+\\s*", "", pomodoro_pizza)
+eurothai_restaurant <- gsub("http\\S+\\s*", "", eurothai_restaurant)
+riverside_restaurant <- gsub("http\\S+\\s*", "", riverside_restaurant)
+ging_restaurant <- gsub("http\\S+\\s*", "", ging_restaurant)
+patong_corner <- gsub("http\\S+\\s*", "", patong_corner)
+catfish_cafe <- gsub("http\\S+\\s*", "", catfish_cafe)
+oiy_restaurant <- gsub("http\\S+\\s*", "", oiy_restaurant)
+ying_restaurant <- gsub("http\\S+\\s*", "", ying_restaurant)
+ali_baba <- gsub("http\\S+\\s*", "", ali_baba)
+kata_villa <- gsub("http\\S+\\s*", "", kata_villa)
+natural_restaurant <- gsub("http\\S+\\s*", "", natural_restaurant)
+white_box_phuket <- gsub("http\\S+\\s*", "", white_box_phuket)
+ann_restaurant <- gsub("http\\S+\\s*", "", ann_restaurant)
+archee_restaurant <- gsub("http\\S+\\s*", "", archee_restaurant)
+dibuk_restaurant <- gsub("http\\S+\\s*", "", dibuk_restaurant)
+the_pizza_coy <- gsub("http\\S+\\s*", "", the_pizza_coy)
+
+
+
+#----Removing punctuation from the reviews ----------------
+k_hotel <- gsub("[[:punct:]]", "", k_hotel)
+yorkshire_hotel <- gsub("[[:punct:]]", "", yorkshire_hotel)
+harrys_steakhouse <- gsub("[[:punct:]]", "", harrys_steakhouse)
+ps_hotel <- gsub("[[:punct:]]", "", ps_hotel)
+cape_panwa <- gsub("[[:punct:]]", "", cape_panwa)
+green_tamarind <- gsub("[[:punct:]]", "", green_tamarind)
+istanbul_turkish <- gsub("[[:punct:]]", "", istanbul_turkish)
+golden_paradise <- gsub("[[:punct:]]", "", golden_paradise)
+surin_chill <- gsub("[[:punct:]]", "", surin_chill)
+sabaijai_cafe <- gsub("[[:punct:]]", "", sabaijai_cafe)
+the_family_restaurant <- gsub("[[:punct:]]", "", the_family_restaurant)
+austrian_garden <- gsub("[[:punct:]]", "", austrian_garden)
+orange_restaurant <- gsub("[[:punct:]]", "", orange_restaurant)
+taste_bar <- gsub("[[:punct:]]", "", taste_bar)
+pomodoro_pizza <- gsub("[[:punct:]]", "", pomodoro_pizza)
+eurothai_restaurant <- gsub("[[:punct:]]", "", eurothai_restaurant)
+riverside_restaurant <- gsub("[[:punct:]]", "", riverside_restaurant)
+ging_restaurant <- gsub("[[:punct:]]", "", ging_restaurant)
+patong_corner <- gsub("[[:punct:]]", "", patong_corner)
+catfish_cafe <- gsub("[[:punct:]]", "", catfish_cafe)
+oiy_restaurant <- gsub("[[:punct:]]", "", oiy_restaurant)
+ying_restaurant <- gsub("[[:punct:]]", "", ying_restaurant)
+ali_baba <- gsub("[[:punct:]]", "", ali_baba)
+kata_villa <- gsub("[[:punct:]]", "", kata_villa)
+natural_restaurant <- gsub("[[:punct:]]", "", natural_restaurant)
+white_box_phuket <- gsub("[[:punct:]]", "", white_box_phuket)
+ann_restaurant <- gsub("[[:punct:]]", "", ann_restaurant)
+archee_restaurant <- gsub("[[:punct:]]", "", archee_restaurant)
+dibuk_restaurant <- gsub("[[:punct:]]", "", dibuk_restaurant)
+the_pizza_coy <- gsub("[[:punct:]]", "", the_pizza_coy)
+
+
+
+
+#----- Removing digits from the reviews------------------
+k_hotel <- gsub("[[:digit:]]", "", k_hotel)
+yorkshire_hotel <- gsub("[[:digit:]]", "", yorkshire_hotel)
+harrys_steakhouse <- gsub("[[:digit:]]", "", harrys_steakhouse)
+ps_hotel <- gsub("[[:digit:]]", "", ps_hotel)
+cape_panwa <- gsub("[[:digit:]]", "", cape_panwa)
+green_tamarind <- gsub("[[:digit:]]", "", green_tamarind)
+istanbul_turkish <- gsub("[[:digit:]]", "", istanbul_turkish)
+golden_paradise <- gsub("[[:digit:]]", "", golden_paradise)
+surin_chill <- gsub("[[:digit:]]", "", surin_chill)
+sabaijai_cafe <- gsub("[[:digit:]]", "", sabaijai_cafe)
+the_family_restaurant <- gsub("[[:digit:]]", "", the_family_restaurant)
+austrian_garden <- gsub("[[:digit:]]", "", austrian_garden)
+orange_restaurant <- gsub("[[:digit:]]", "", orange_restaurant)
+taste_bar <- gsub("[[:digit:]]", "", taste_bar)
+pomodoro_pizza <- gsub("[[:digit:]]", "", pomodoro_pizza)
+eurothai_restaurant <- gsub("[[:digit:]]", "", eurothai_restaurant)
+riverside_restaurant <- gsub("[[:digit:]]", "", riverside_restaurant)
+ging_restaurant <- gsub("[[:digit:]]", "", ging_restaurant)
+patong_corner <- gsub("[[:digit:]]", "", patong_corner)
+catfish_cafe <- gsub("[[:digit:]]", "", catfish_cafe)
+oiy_restaurant <- gsub("[[:digit:]]", "", oiy_restaurant)
+ying_restaurant <- gsub("[[:digit:]]", "", ying_restaurant)
+ali_baba <- gsub("[[:digit:]]", "", ali_baba)
+kata_villa <- gsub("[[:digit:]]", "", kata_villa)
+natural_restaurant <- gsub("[[:digit:]]", "", natural_restaurant)
+white_box_phuket <- gsub("[[:digit:]]", "", white_box_phuket)
+ann_restaurant <- gsub("[[:digit:]]", "", ann_restaurant)
+archee_restaurant <- gsub("[[:digit:]]", "", archee_restaurant)
+dibuk_restaurant <- gsub("[[:digit:]]", "", dibuk_restaurant)
+the_pizza_coy <- gsub("[[:digit:]]", "", the_pizza_coy)
+
+
+
+head(ali_baba, 10)
+head(white_box_phuket, 10)
+head(the_family_restaurant, 10)
+head(catfish_cafe, 10)
+head(dibuk_restaurant, 10)
+
+
+
+#----Removing blank spaces that starts the review-----------
+k_hotel <- gsub("^ ", "", k_hotel)
+yorkshire_hotel <- gsub("^ ", "", yorkshire_hotel)
+harrys_steakhouse <- gsub("^ ", "", harrys_steakhouse)
+ps_hotel <- gsub("^ ", "", ps_hotel)
+cape_panwa <- gsub("^ ", "", cape_panwa)
+green_tamarind <- gsub("^ ", "", green_tamarind)
+istanbul_turkish <- gsub("^ ", "", istanbul_turkish)
+golden_paradise <- gsub("^ ", "", golden_paradise)
+surin_chill <- gsub("^ ", "", surin_chill)
+sabaijai_cafe <- gsub("^ ", "", sabaijai_cafe)
+the_family_restaurant <- gsub("^ ", "", the_family_restaurant)
+austrian_garden <- gsub("^ ", "", austrian_garden)
+orange_restaurant <- gsub("^ ", "", orange_restaurant)
+taste_bar <- gsub("^ ", "", taste_bar)
+pomodoro_pizza <- gsub("^ ", "", pomodoro_pizza)
+eurothai_restaurant <- gsub("^ ", "", eurothai_restaurant)
+riverside_restaurant <- gsub("^ ", "", riverside_restaurant)
+ging_restaurant <- gsub("^ ", "", ging_restaurant)
+patong_corner <- gsub("^ ", "", patong_corner)
+catfish_cafe <- gsub("^ ", "", catfish_cafe)
+oiy_restaurant <- gsub("^ ", "", oiy_restaurant)
+ying_restaurant <- gsub("^ ", "", ying_restaurant)
+ali_baba <- gsub("^ ", "", ali_baba)
+kata_villa <- gsub("^ ", "", kata_villa)
+natural_restaurant <- gsub("^ ", "", natural_restaurant)
+white_box_phuket <- gsub("^ ", "", white_box_phuket)
+ann_restaurant <- gsub("^ ", "", ann_restaurant)
+archee_restaurant <- gsub("^ ", "", archee_restaurant)
+dibuk_restaurant <- gsub("^ ", "", dibuk_restaurant)
+the_pizza_coy <- gsub("^ ", "", the_pizza_coy)
+
+head(ali_baba, 10)
+head(white_box_phuket, 10)
+head(the_family_restaurant, 10)
+head(catfish_cafe, 10)
+head(dibuk_restaurant, 10)
+
+
+#----Removing blank spaces that ends the review-----------
+k_hotel <- gsub(" $", "", k_hotel)
+yorkshire_hotel <- gsub(" $", "", yorkshire_hotel)
+harrys_steakhouse <- gsub(" $", "", harrys_steakhouse)
+ps_hotel <- gsub(" $", "", ps_hotel)
+cape_panwa <- gsub(" $", "", cape_panwa)
+green_tamarind <- gsub(" $", "", green_tamarind)
+istanbul_turkish <- gsub(" $", "", istanbul_turkish)
+golden_paradise <- gsub(" $", "", golden_paradise)
+surin_chill <- gsub(" $", "", surin_chill)
+sabaijai_cafe <- gsub(" $", "", sabaijai_cafe)
+the_family_restaurant <- gsub(" $", "", the_family_restaurant)
+austrian_garden <- gsub(" $", "", austrian_garden)
+orange_restaurant <- gsub(" $", "", orange_restaurant)
+taste_bar <- gsub(" $", "", taste_bar)
+pomodoro_pizza <- gsub(" $", "", pomodoro_pizza)
+eurothai_restaurant <- gsub(" $", "", eurothai_restaurant)
+riverside_restaurant <- gsub(" $", "", riverside_restaurant)
+ging_restaurant <- gsub(" $", "", ging_restaurant)
+patong_corner <- gsub(" $", "", patong_corner)
+catfish_cafe <- gsub(" $", "", catfish_cafe)
+oiy_restaurant <- gsub(" $", "", oiy_restaurant)
+ying_restaurant <- gsub(" $", "", ying_restaurant)
+ali_baba <- gsub(" $", "", ali_baba)
+kata_villa <- gsub(" $", "", kata_villa)
+natural_restaurant <- gsub(" $", "", natural_restaurant)
+white_box_phuket <- gsub(" $", "", white_box_phuket)
+ann_restaurant <- gsub(" $", "", ann_restaurant)
+archee_restaurant <- gsub(" $", "", archee_restaurant)
+dibuk_restaurant <- gsub(" $", "", dibuk_restaurant)
+the_pizza_coy <- gsub(" $", "", the_pizza_coy)
+
+
+head(ali_baba, 10)
+head(white_box_phuket, 10)
+head(the_family_restaurant, 10)
+head(catfish_cafe, 10)
+head(dibuk_restaurant, 10)
+
+
+#We can remove the word "food" and "hotel" from the word bag, since 
+#it's the most common key word people make comment about in an hotel
+
+k_hotel <- gsub("food", "", k_hotel)
+yorkshire_hotel <- gsub("food", "", yorkshire_hotel)
+harrys_steakhouse <- gsub("food", "", harrys_steakhouse)
+ps_hotel <- gsub("food", "", ps_hotel)
+cape_panwa <- gsub("food", "", cape_panwa)
+green_tamarind <- gsub("food", "", green_tamarind)
+istanbul_turkish <- gsub("food", "", istanbul_turkish)
+golden_paradise <- gsub("food", "", golden_paradise)
+surin_chill <- gsub("food", "", surin_chill)
+sabaijai_cafe <- gsub("food", "", sabaijai_cafe)
+the_family_restaurant <- gsub("food", "", the_family_restaurant)
+austrian_garden <- gsub("food", "", austrian_garden)
+orange_restaurant <- gsub("food", "", orange_restaurant)
+taste_bar <- gsub("food", "", taste_bar)
+pomodoro_pizza <- gsub("food", "", pomodoro_pizza)
+eurothai_restaurant <- gsub("food", "", eurothai_restaurant)
+riverside_restaurant <- gsub("food", "", riverside_restaurant)
+ging_restaurant <- gsub("food", "", ging_restaurant)
+patong_corner <- gsub("food", "", patong_corner)
+catfish_cafe <- gsub("food", "", catfish_cafe)
+oiy_restaurant <- gsub("food", "", oiy_restaurant)
+ying_restaurant <- gsub("food", "", ying_restaurant)
+ali_baba <- gsub("food", "", ali_baba)
+kata_villa <- gsub("food", "", kata_villa)
+natural_restaurant <- gsub("food", "", natural_restaurant)
+white_box_phuket <- gsub("food", "", white_box_phuket)
+ann_restaurant <- gsub("food", "", ann_restaurant)
+archee_restaurant <- gsub("food", "", archee_restaurant)
+dibuk_restaurant <- gsub("food", "", dibuk_restaurant)
+the_pizza_coy <- gsub("food", "", the_pizza_coy)
+
+
+k_hotel <- gsub("hotel", "", k_hotel)
+yorkshire_hotel <- gsub("hotel", "", yorkshire_hotel)
+harrys_steakhouse <- gsub("hotel", "", harrys_steakhouse)
+ps_hotel <- gsub("hotel", "", ps_hotel)
+cape_panwa <- gsub("hotel", "", cape_panwa)
+green_tamarind <- gsub("hotel", "", green_tamarind)
+istanbul_turkish <- gsub("hotel", "", istanbul_turkish)
+golden_paradise <- gsub("hotel", "", golden_paradise)
+surin_chill <- gsub("hotel", "", surin_chill)
+sabaijai_cafe <- gsub("hotel", "", sabaijai_cafe)
+the_family_restaurant <- gsub("hotel", "", the_family_restaurant)
+austrian_garden <- gsub("hotel", "", austrian_garden)
+orange_restaurant <- gsub("hotel", "", orange_restaurant)
+taste_bar <- gsub("hotel", "", taste_bar)
+pomodoro_pizza <- gsub("hotel", "", pomodoro_pizza)
+eurothai_restaurant <- gsub("hotel", "", eurothai_restaurant)
+riverside_restaurant <- gsub("hotel", "", riverside_restaurant)
+ging_restaurant <- gsub("hotel", "", ging_restaurant)
+patong_corner <- gsub("hotel", "", patong_corner)
+catfish_cafe <- gsub("hotel", "", catfish_cafe)
+oiy_restaurant <- gsub("hotel", "", oiy_restaurant)
+ying_restaurant <- gsub("hotel", "", ying_restaurant)
+ali_baba <- gsub("hotel", "", ali_baba)
+kata_villa <- gsub("hotel", "", kata_villa)
+natural_restaurant <- gsub("hotel", "", natural_restaurant)
+white_box_phuket <- gsub("hotel", "", white_box_phuket)
+ann_restaurant <- gsub("hotel", "", ann_restaurant)
+archee_restaurant <- gsub("hotel", "", archee_restaurant)
+dibuk_restaurant <- gsub("hotel", "", dibuk_restaurant)
+the_pizza_coy <- gsub("hotel", "", the_pizza_coy)
+
+
+#Writing out clean dataset for SAS analysis
+write.csv(k_hotel, "sentiment results/k_hotel.csv")
+write.csv(yorkshire_hotel, "sentiment results/yorkshire_hotel.csv")
+write.csv(harrys_steakhouse, "sentiment results/harrys_steakhouse.csv")
+write.csv(cape_panwa, "sentiment results/cape_panwa.csv")
+write.csv(green_tamarind, "sentiment results/green_tamarind.csv")
+write.csv(istanbul_turkish, "sentiment results/istanbul_turkish.csv")
+write.csv(golden_paradise, "sentiment results/golden_paradise.csv")
+write.csv(surin_chill, "sentiment results/surin_chill.csv")
+write.csv(sabaijai_cafe, "sentiment results/sabaijai_cafe.csv")
+write.csv(the_family_restaurant, "sentiment results/the_family_restaurant.csv")
+write.csv(austrian_garden, "sentiment results/austrian_garden.csv")
+write.csv(orange_restaurant, "sentiment results/orange_restaurant.csv")
+write.csv(taste_bar, "sentiment results/taste_bar.csv")
+write.csv(pomodoro_pizza, "sentiment results/pomodoro_pizza.csv")
+write.csv(eurothai_restaurant, "sentiment results/eurothai_restaurant.csv")
+write.csv(riverside_restaurant, "sentiment results/riverside_restaurant.csv")
+write.csv(ging_restaurant, "sentiment results/ging_restaurant.csv")
+write.csv(patong_corner, "sentiment results/patong_corner.csv")
+write.csv(catfish_cafe, "sentiment results/catfish.csv")
+write.csv(oiy_restaurant, "sentiment results/oiy_restaurant.csv")
+write.csv(ying_restaurant, "sentiment results/ying_restaurant.csv")
+write.csv(ali_baba, "sentiment results/ali_baba.csv")
+write.csv(kata_villa, "sentiment results/kata_villa.csv")
+write.csv(natural_restaurant, "sentiment results/natural_restaurant.csv")
+write.csv(white_box_phuket, "sentiment results/white_box_phuket.csv")
+write.csv(ann_restaurant, "sentiment results/ann_restaurant.csv")
+write.csv(archee_restaurant, "sentiment results/archee_restaurant.csv")
+write.csv(dibuk_restaurant, "sentiment results/dibuk_restaurant.csv")
+write.csv(the_pizza_coy, "sentiment results/the_pizza_coy.csv")
+
+
+
+
+head(ali_baba, 5)
+head(white_box_phuket, 5)
+head(the_family_restaurant, 5)
+head(catfish_cafe, 5)
+head(dibuk_restaurant, 5)
+
+
+
+#------Converting the text vectors to corpus
+corpus_k_hotel <- Corpus(VectorSource(k_hotel))
+corpus_yorkshire_hotel <- Corpus(VectorSource(yorkshire_hotel))
+corpus_harrys_steakhouse <- Corpus(VectorSource(harrys_steakhouse))
+corpus_ps_hotel <- Corpus(VectorSource(ps_hotel))
+corpus_cape_panwa <- Corpus(VectorSource(cape_panwa))
+corpus_green_tamarind <- Corpus(VectorSource(green_tamarind))
+corpus_istanbul_turkish <- Corpus(VectorSource(istanbul_turkish))
+corpus_golden_paradise <- Corpus(VectorSource(golden_paradise))
+corpus_surin_chill <- Corpus(VectorSource(surin_chill))
+corpus_sabaijai_cafe <- Corpus(VectorSource(sabaijai_cafe))
+corpus_the_family_restaurant <- Corpus(VectorSource(the_family_restaurant))
+corpus_austrian_garden <- Corpus(VectorSource(austrian_garden))
+corpus_orange_restaurant <- Corpus(VectorSource(orange_restaurant))
+corpus_taste_bar <- Corpus(VectorSource(taste_bar))
+corpus_pomodoro_pizza <- Corpus(VectorSource(pomodoro_pizza))
+corpus_eurothai_restaurant <- Corpus(VectorSource(eurothai_restaurant))
+corpus_riverside_restaurant <- Corpus(VectorSource(riverside_restaurant))
+corpus_ging_restaurant <- Corpus(VectorSource(ging_restaurant))
+corpus_patong_corner <- Corpus(VectorSource(patong_corner))
+corpus_catfish_cafe <- Corpus(VectorSource(catfish_cafe))
+corpus_oiy_restaurant <- Corpus(VectorSource(oiy_restaurant))
+corpus_ying_restaurant <- Corpus(VectorSource(ying_restaurant))
+corpus_ali_baba <- Corpus(VectorSource(ali_baba))
+corpus_kata_villa <- Corpus(VectorSource(kata_villa))
+corpus_natural_restaurant <- Corpus(VectorSource(natural_restaurant))
+corpus_white_box_phuket <- Corpus(VectorSource(white_box_phuket))
+corpus_ann_restaurant <- Corpus(VectorSource(ann_restaurant))
+corpus_archee_restaurant <- Corpus(VectorSource(archee_restaurant))
+corpus_dibuk_restaurant <- Corpus(VectorSource(dibuk_restaurant))
+corpus_the_pizza_coy <- Corpus(VectorSource(the_pizza_coy))
+
+
+print(corpus_ali_baba)
+print(corpus_white_box_phuket)
+print(corpus_the_family_restaurant)
+print(corpus_catfish_cafe)
+print(corpus_dibuk_restaurant)
+
+
+
+#----------Removing stop words from the corpus
+corpus_k_hotel <- tm_map(corpus_k_hotel, removeWords, stopwords("english"))
+corpus_yorkshire_hotel <- tm_map(corpus_yorkshire_hotel, removeWords, stopwords("english"))
+corpus_harrys_steakhouse <- tm_map(corpus_harrys_steakhouse, removeWords, stopwords("english"))      corpus_ps_hotel <- tm_map(corpus_ps_hotel, removeWords, stopwords("english"))      corpus_cape_panwa <- tm_map(corpus_cape_panwa, removeWords, stopwords("english"))
+corpus_green_tamarind <- tm_map(corpus_green_tamarind, removeWords, stopwords("english"))
+corpus_istanbul_turkish <- tm_map(corpus_istanbul_turkish, removeWords, stopwords("english"))
+corpus_golden_paradise <- tm_map(corpus_golden_paradise, removeWords, stopwords("english"))
+corpus_surin_chill <- tm_map(corpus_surin_chill, removeWords, stopwords("english"))
+corpus_sabaijai_cafe <- tm_map(corpus_sabaijai_cafe, removeWords, stopwords("english"))
+corpus_the_family_restaurant <- tm_map(corpus_the_family_restaurant, removeWords, stopwords("english"))
+corpus_austrian_garden <- tm_map(corpus_austrian_garden, removeWords, stopwords("english"))
+corpus_orange_restaurant <- tm_map(corpus_orange_restaurant, removeWords, stopwords("english"))
+corpus_taste_bar <- tm_map(corpus_taste_bar, removeWords, stopwords("english"))
+corpus_pomodoro_pizza <- tm_map(corpus_pomodoro_pizza, removeWords, stopwords("english"))
+corpus_eurothai_restaurant <- tm_map(corpus_eurothai_restaurant, removeWords, stopwords("english"))
+corpus_riverside_restaurant <- tm_map(corpus_riverside_restaurant, removeWords, stopwords("english"))
+corpus_ging_restaurant <- tm_map(corpus_ging_restaurant, removeWords, stopwords("english"))
+corpus_patong_corner <- tm_map(corpus_patong_corner, removeWords, stopwords("english"))
+corpus_catfish_cafe <- tm_map(corpus_catfish_cafe, removeWords, stopwords("english"))
+corpus_oiy_restaurant <- tm_map(corpus_oiy_restaurant, removeWords, stopwords("english"))
+corpus_ying_restaurant <- tm_map(corpus_ying_restaurant, removeWords, stopwords("english"))
+corpus_ali_baba <- tm_map(corpus_ali_baba, removeWords, stopwords("english"))
+corpus_kata_villa <- tm_map(corpus_kata_villa, removeWords, stopwords("english"))
+corpus_natural_restaurant <- tm_map(corpus_natural_restaurant, removeWords, stopwords("english"))
+corpus_white_box_phuket <- tm_map(corpus_white_box_phuket, removeWords, stopwords("english"))
+corpus_ann_restaurant <- tm_map(corpus_ann_restaurant, removeWords, stopwords("english"))
+corpus_archee_restaurant <- tm_map(corpus_archee_restaurant, removeWords, stopwords("english"))
+corpus_dibuk_restaurant <- tm_map(corpus_dibuk_restaurant, removeWords, stopwords("english"))
+corpus_the_pizza_coy <- tm_map(corpus_the_pizza_coy, removeWords, stopwords("english"))
+                                                            
+
+#----------Removing empty spaces from the corpus
+corpus_k_hotel <- tm_map(corpus_k_hotel, stripWhitespace)
+corpus_yorkshire_hotel <- tm_map(corpus_yorkshire_hotel, stripWhitespace)
+corpus_harrys_steakhouse <- tm_map(corpus_harrys_steakhouse, stripWhitespace)
+corpus_ps_hotel <- tm_map(corpus_ps_hotel, stripWhitespace)
+corpus_cape_panwa <- tm_map(corpus_cape_panwa, stripWhitespace)
+corpus_green_tamarind <- tm_map(corpus_green_tamarind, stripWhitespace)
+corpus_istanbul_turkish <- tm_map(corpus_istanbul_turkish, stripWhitespace)
+corpus_golden_paradise <- tm_map(corpus_golden_paradise, stripWhitespace)
+corpus_surin_chill <- tm_map(corpus_surin_chill, stripWhitespace)
+corpus_sabaijai_cafe <- tm_map(corpus_sabaijai_cafe, stripWhitespace)
+corpus_the_family_restaurant <- tm_map(corpus_the_family_restaurant, stripWhitespace)
+corpus_austrian_garden <- tm_map(corpus_austrian_garden, stripWhitespace)
+corpus_orange_restaurant <- tm_map(corpus_orange_restaurant, stripWhitespace)
+corpus_taste_bar <- tm_map(corpus_taste_bar, stripWhitespace)
+corpus_pomodoro_pizza <- tm_map(corpus_pomodoro_pizza, stripWhitespace)
+corpus_eurothai_restaurant <- tm_map(corpus_eurothai_restaurant, stripWhitespace)
+corpus_riverside_restaurant <- tm_map(corpus_riverside_restaurant, stripWhitespace)
+corpus_ging_restaurant <- tm_map(corpus_ging_restaurant, stripWhitespace)
+corpus_patong_corner <- tm_map(corpus_patong_corner, stripWhitespace)
+corpus_catfish_cafe <- tm_map(corpus_catfish_cafe, stripWhitespace)
+corpus_oiy_restaurant <- tm_map(corpus_oiy_restaurant, stripWhitespace)
+corpus_ying_restaurant <- tm_map(corpus_ying_restaurant, stripWhitespace)
+corpus_ali_baba <- tm_map(corpus_ali_baba, stripWhitespace)
+corpus_kata_villa <- tm_map(corpus_kata_villa, stripWhitespace)
+corpus_natural_restaurant <- tm_map(corpus_natural_restaurant, stripWhitespace)
+corpus_white_box_phuket <- tm_map(corpus_white_box_phuket, stripWhitespace)
+corpus_ann_restaurant <- tm_map(corpus_ann_restaurant, stripWhitespace)
+corpus_archee_restaurant <- tm_map(corpus_archee_restaurant, stripWhitespace)
+corpus_dibuk_restaurant <- tm_map(corpus_dibuk_restaurant, stripWhitespace)
+corpus_the_pizza_coy <- tm_map(corpus_the_pizza_coy, stripWhitespace)
+
+
+
+inspect(head(corpus_ali_baba))
+inspect(head(corpus_white_box_phuket))
+inspect(head(corpus_the_family_restaurant))
+inspect(head(corpus_catfish_cafe))
+inspect(head(corpus_dibuk_restaurant))
+
+
+
+#----Stemming the words to their root, "Snowballc" library is used
+
+stem_k_hotel <- tm_map(corpus_k_hotel, stemDocument)
+stem_yorkshire_hotel <- tm_map(corpus_yorkshire_hotel, stemDocument)
+stem_harrys_steakhouse <- tm_map(corpus_harrys_steakhouse, stemDocument)
+stem_ps_hotel <- tm_map(corpus_ps_hotel, stemDocument)
+stem_cape_panwa <- tm_map(corpus_cape_panwa, stemDocument)
+stem_green_tamarind <- tm_map(corpus_green_tamarind, stemDocument)
+stem_istanbul_turkish <- tm_map(corpus_istanbul_turkish, stemDocument)
+stem_golden_paradise <- tm_map(corpus_golden_paradise, stemDocument)
+stem_surin_chill <- tm_map(corpus_surin_chill, stemDocument)
+stem_sabaijai_cafe <- tm_map(corpus_sabaijai_cafe, stemDocument)
+stem_the_family_restaurant <- tm_map(corpus_the_family_restaurant, stemDocument)
+stem_austrian_garden <- tm_map(corpus_austrian_garden, stemDocument)
+stem_orange_restaurant <- tm_map(corpus_orange_restaurant, stemDocument)
+stem_taste_bar <- tm_map(corpus_taste_bar, stemDocument)
+stem_pomodoro_pizza <- tm_map(corpus_pomodoro_pizza, stemDocument)
+stem_eurothai_restaurant <- tm_map(corpus_eurothai_restaurant, stemDocument)
+stem_riverside_restaurant <- tm_map(corpus_riverside_restaurant, stemDocument)
+stem_ging_restaurant <- tm_map(corpus_ging_restaurant, stemDocument)
+stem_patong_corner <- tm_map(corpus_patong_corner, stemDocument)
+stem_catfish_cafe <- tm_map(corpus_catfish_cafe, stemDocument)
+stem_oiy_restaurant <- tm_map(corpus_oiy_restaurant, stemDocument)
+stem_ying_restaurant <- tm_map(corpus_ying_restaurant, stemDocument)
+stem_ali_baba <- tm_map(corpus_ali_baba, stemDocument)
+stem_kata_villa <- tm_map(corpus_kata_villa, stemDocument)
+stem_natural_restaurant <- tm_map(corpus_natural_restaurant, stemDocument)
+stem_white_box_phuket <- tm_map(corpus_white_box_phuket, stemDocument)
+stem_ann_restaurant <- tm_map(corpus_ann_restaurant, stemDocument)
+stem_archee_restaurant <- tm_map(corpus_archee_restaurant, stemDocument)
+stem_dibuk_restaurant <- tm_map(corpus_dibuk_restaurant, stemDocument)
+stem_the_pizza_coy <- tm_map(corpus_the_pizza_coy, stemDocument)
+
+
+
+inspect(head(stem_ali_baba))
+inspect(head(stem_white_box_phuket))
+inspect(head(stem_the_family_restaurant))
+inspect(head(stem_catfish_cafe))
+inspect(head(stem_dibuk_restaurant))
+
+
+
+# Sentiment Analysis function ----
+# Load the positive and negative lexicon data
+
+positive_lexicon <- read.csv("positive-lexicon.txt")
+negative_lexicon <- read.csv("negative-lexicon.txt")
+
+
+# Inspect lexicons
+#Inspect lexicons
+head(positive_lexicon)
+tail(positive_lexicon)
+
+head(negative_lexicon)
+tail(negative_lexicon)
+
+
+#---Sentimental Analysis function --------------------------------
+
+sentiment <- function(stem_corpus)
+{
+  #generate wordclouds
+  wordcloud(stem_corpus,
+            min.freq = 3,
+            colors=brewer.pal(8, "Dark2"),
+            random.color = TRUE,
+            max.words = 100)
+  #Calculating the count of total positive and negative words in each review
+  
+  #Create variables and vectors
+  total_pos_count <- 0
+  total_neg_count <- 0
+  pos_count_vector <- c()
+  neg_count_vector <- c()
+  #Calculate the size of the corpus
+  size <- length(stem_corpus)
+  
+  for(i in 1:size)
+  {
+    #All the words in current review
+    corpus_words<- list(strsplit(stem_corpus[[i]]$content, split = " "))
+    
+    #positive words in current review
+    pos_count <-length(intersect(unlist(corpus_words), unlist(positive_lexicon)))
+    
+    #negative words in current review
+    neg_count <- length(intersect(unlist(corpus_words), unlist(negative_lexicon)))
+    
+    total_pos_count <- total_pos_count + pos_count ## overall positive count
+    total_neg_count <- total_neg_count + neg_count ## overall negative count
+    
+  }
+  #Calculating overall percentage of positive and negative words of all the reviews
+  total_pos_count ## overall positive count
+  total_neg_count ## overall negative count
+  total_count <- total_pos_count + total_neg_count
+  overall_positive_percentage <- (total_pos_count*100)/total_count
+  overall_negative_percentage <- (total_neg_count*100)/total_count
+  overall_positive_percentage ## overall positive percentage
+  #Create a dataframe with all the positive and negative reviews
+  df<-data.frame(Review_Type=c("Positive","Negative"),
+                 Count=c(total_pos_count, total_neg_count))
+  print(df) #Print
+  
+  barplot(c(overall_negative_percentage, overall_positive_percentage),
+         names.arg = c("Negative", "Positive"),
+         las = 1,
+         xlab="Sentiments",
+         ylab="Percentage",
+         col=rainbow(2))
+  
+  overall_positive_percentage<-paste("Percentage of Positive Reviews:",
+                                     round(overall_positive_percentage,2),"%")
+  return(overall_positive_percentage)
+}
+
+#--------------End of Sentiment Analysis Function_-------------
+
+#Calculating positive reviews percentage using the sentiment analysis function
+sentiment(stem_k_hotel)
+sentiment(stem_yorkshire_hotel)
+sentiment(stem_harrys_steakhouse)
+sentiment(stem_ps_hotel)
+sentiment(stem_cape_panwa)
+sentiment(stem_green_tamarind)
+sentiment(stem_istanbul_turkish)
+sentiment(stem_golden_paradise)
+sentiment(stem_surin_chill)
+sentiment(stem_sabaijai_cafe)
+sentiment(stem_the_family_restaurant)
+sentiment(stem_austrian_garden)
+sentiment(stem_orange_restaurant)
+sentiment(stem_taste_bar)
+sentiment(stem_pomodoro_pizza)
+sentiment(stem_eurothai_restaurant)
+sentiment(stem_riverside_restaurant)
+sentiment(stem_ging_restaurant)
+sentiment(stem_patong_corner)
+sentiment(stem_catfish_cafe)
+sentiment(stem_oiy_restaurant)
+sentiment(stem_ying_restaurant)
+sentiment(stem_ali_baba)
+sentiment(stem_kata_villa)
+sentiment(stem_natural_restaurant)
+sentiment(stem_white_box_phuket)
+sentiment(stem_ann_restaurant)
+sentiment(stem_archee_restaurant)
+sentiment(stem_dibuk_restaurant)
+sentiment(stem_the_pizza_coy)
+
+#---Checking the warning message
+warnings(stem_ali_baba)
+warnings(stem_white_box_phuket)
+warnings(stem_the_family_restaurant)
+warnings(stem_catfish_cafe)
+warnings(stem_dibuk_restaurant)
